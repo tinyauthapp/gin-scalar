@@ -85,6 +85,11 @@ func TestWrapCustomHandler(t *testing.T) {
 	w := performRequest(http.MethodGet, "/swagger", router)
 	assert.Equal(t, http.StatusOK, w.Code)
 	assert.Contains(t, w.Body.String(), "<title>Swagger UI</title>")
+
+	// Test: /swagger/ should also return index.html
+	wSlash := performRequest(http.MethodGet, "/swagger/", router)
+	assert.Equal(t, http.StatusOK, wSlash.Code)
+	assert.Contains(t, wSlash.Body.String(), "<title>Swagger UI</title>")
 }
 
 func TestDisablingWrapHandler(t *testing.T) {
