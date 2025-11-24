@@ -80,6 +80,11 @@ func TestWrapCustomHandler(t *testing.T) {
 	assert.Equal(t, http.StatusMethodNotAllowed, performRequest(http.MethodPost, "/index.html", router).Code)
 
 	assert.Equal(t, http.StatusMethodNotAllowed, performRequest(http.MethodPut, "/index.html", router).Code)
+
+	// Test: /swagger should redirect to /swagger/index.html (not implemented yet, should fail)
+	w := performRequest(http.MethodGet, "/swagger", router)
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Contains(t, w.Body.String(), "<title>Swagger UI</title>")
 }
 
 func TestDisablingWrapHandler(t *testing.T) {
