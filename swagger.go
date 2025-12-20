@@ -159,6 +159,12 @@ func CustomWrapHandler(config *Config, handler *webdav.Handler) gin.HandlerFunc 
 	var matcher = regexp.MustCompile(`(.*)(index\.html|index\.css|swagger-initializer\.js|doc\.json|favicon-16x16\.png|favicon-32x32\.png|/oauth2-redirect\.html|swagger-ui\.css|swagger-ui\.css\.map|swagger-ui\.js|swagger-ui\.js\.map|swagger-ui-bundle\.js|swagger-ui-bundle\.js\.map|swagger-ui-standalone-preset\.js|swagger-ui-standalone-preset\.js\.map)[?|.]*`)
 
 	return func(ctx *gin.Context) {
+		// Return index.html content for /swagger or /swagger/
+		if ctx.Request.Method == http.MethodGet && (ctx.Request.RequestURI == "/swagger" || ctx.Request.RequestURI == "/swagger/") {
+			ctx.Header("Content-Type", "text/html; charset=utf-8")
+			_ = index.Execute(ctx.Writer, config.toSwaggerConfig())
+			return
+		}
 		if ctx.Request.Method != http.MethodGet {
 			ctx.AbortWithStatus(http.StatusMethodNotAllowed)
 
