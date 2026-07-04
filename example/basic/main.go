@@ -2,10 +2,8 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	swaggerFiles "github.com/swaggo/files"
-	"github.com/swaggo/gin-swagger"
-
 	"github.com/swaggo/gin-swagger/example/basic/api"
+	ginScalar "github.com/tinyauthapp/gin-swagger-scalar"
 
 	_ "github.com/swaggo/gin-swagger/example/basic/docs"
 )
@@ -29,9 +27,7 @@ func main() {
 
 	r.GET("/v2/testapi/get-string-by-int/:some_id", api.GetStringByInt)
 	r.GET("/v2/testapi/get-struct-array-by-string/:some_id", api.GetStructArrayByString)
-
-	url := ginSwagger.URL("http://petstore.swagger.io:8080/swagger/doc.json") // The url pointing to API definition
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
+	r.GET("/scalar/*any", ginScalar.WrapHandler(nil))
 
 	r.Run()
 }

@@ -2,11 +2,10 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 	v1 "github.com/swaggo/gin-swagger/example/multiple/api/v1"
 	v2 "github.com/swaggo/gin-swagger/example/multiple/api/v2"
 	_ "github.com/swaggo/gin-swagger/example/multiple/docs"
+	ginScalar "github.com/tinyauthapp/gin-swagger-scalar"
 )
 
 func main() {
@@ -15,11 +14,11 @@ func main() {
 
 	// Register api/v1 endpoints
 	v1.Register(router)
-	router.GET("/swagger/v1/*any", ginSwagger.WrapHandler(swaggerFiles.NewHandler(), ginSwagger.InstanceName("v1")))
+	router.GET("/scalar/v1/*any", ginScalar.WrapHandler(nil, ginScalar.InstanceName("v1"), ginScalar.BasePath("/scalar/v1")))
 
 	// Register api/v2 endpoints
 	v2.Register(router)
-	router.GET("/swagger/v2/*any", ginSwagger.WrapHandler(swaggerFiles.NewHandler(), ginSwagger.InstanceName("v2")))
+	router.GET("/scalar/v2/*any", ginScalar.WrapHandler(nil, ginScalar.InstanceName("v2"), ginScalar.BasePath("/scalar/v2")))
 
 	// Listen and Server in
 	_ = router.Run()
