@@ -28,12 +28,23 @@ type Config struct {
 	InstanceName string
 	// The base path of Scalar UI, default is /scalar
 	BasePath string
+	// Project name, default is "Scalar"
+	ProjectName string
 }
 
 // The configuration for the Scalar template
 type scalarConfig struct {
 	ScalarScript string
 	DocPath      string
+	ProjectName  string
+}
+
+// ProjectName sets the title of the Scalar UI.
+// Defaults to "Scalar".
+func ProjectName(name string) func(*Config) {
+	return func(c *Config) {
+		c.ProjectName = name
+	}
 }
 
 // BasePath sets the base path in which the Scalar UI will be served.
@@ -66,6 +77,7 @@ func WrapHandler(_ *http.Handler, options ...func(*Config)) gin.HandlerFunc {
 		URL:          "doc.json",
 		InstanceName: "swagger",
 		BasePath:     "/scalar",
+		ProjectName:  "Scalar",
 	}
 
 	for _, opt := range options {
