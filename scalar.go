@@ -160,9 +160,7 @@ func CustomWrapHandler(config *Config) gin.HandlerFunc {
 func DisablingWrapHandler(handler *http.Handler, env string) gin.HandlerFunc {
 	if os.Getenv(env) != "" {
 		return func(c *gin.Context) {
-			// Simulate behavior when route unspecified and
-			// return 404 HTTP code
-			c.String(http.StatusNotFound, "")
+			c.AbortWithStatus(http.StatusNotFound)
 		}
 	}
 
@@ -174,9 +172,7 @@ func DisablingWrapHandler(handler *http.Handler, env string) gin.HandlerFunc {
 func DisablingCustomWrapHandler(config *Config, handler *http.Handler, env string) gin.HandlerFunc {
 	if os.Getenv(env) != "" {
 		return func(c *gin.Context) {
-			// Simulate behavior when route unspecified and
-			// return 404 HTTP code
-			c.String(http.StatusNotFound, "")
+			c.AbortWithStatus(http.StatusNotFound)
 		}
 	}
 
