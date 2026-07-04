@@ -1,99 +1,83 @@
-# gin-swagger
+# gin-scalar
 
-gin middleware to automatically generate RESTful API documentation with Swagger 2.0.
+A gin middleware that helps automatically generate RESTful API documentation with Scalar.
 
-[![Build Status](https://github.com/swaggo/gin-swagger/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/features/actions)
-[![Codecov branch](https://img.shields.io/codecov/c/github/swaggo/gin-swagger/master.svg)](https://codecov.io/gh/swaggo/gin-swagger)
-[![Go Report Card](https://goreportcard.com/badge/github.com/swaggo/gin-swagger)](https://goreportcard.com/report/github.com/swaggo/gin-swagger)
-[![GoDoc](https://godoc.org/github.com/swaggo/gin-swagger?status.svg)](https://godoc.org/github.com/swaggo/gin-swagger)
-[![Release](https://img.shields.io/github/release/swaggo/gin-swagger.svg?style=flat-square)](https://github.com/swaggo/gin-swagger/releases)
+> [!NOTE]
+> Unlike Swagger implementations, this middleware bundles Scalar, and it does not need a separate files package.
 
 ## Usage
 
 ### Start using it
 
 1. Add comments to your API source code, [See Declarative Comments Format](https://github.com/swaggo/swag/blob/master/README.md#declarative-comments-format).
-2. Download [Swag](https://github.com/swaggo/swag) for Go by using:
-
-```sh
-go get -u github.com/swaggo/swag/cmd/swag
-```
-
-Starting in Go 1.17, installing executables with `go get` is deprecated. `go install` may be used instead:
+2. Download [Swag](https://github.com/swaggo/swag) for Go with:
 
 ```sh
 go install github.com/swaggo/swag/cmd/swag@latest
 ```
 
-3. Run the [Swag](https://github.com/swaggo/swag) at your Go project root path(for instance `~/root/go-project-name`),
-   [Swag](https://github.com/swaggo/swag) will parse comments and generate required files(`docs` folder and `docs/doc.go`)
-   at `~/root/go-project-name/docs`.
+3. Run [Swag](https://github.com/swaggo/swag) at your Go project root path, [Swag](https://github.com/swaggo/swag) will parse comments and generate the required files (`docs` folder and `docs/doc.go`).
 
 ```sh
 swag init
 ```
 
-4. Download [gin-swagger](https://github.com/swaggo/gin-swagger) by using:
+4. Download [gin-scalar](https://github.com/tinyauthapp/gin-scalar) with:
 
 ```sh
-go get -u github.com/swaggo/gin-swagger
-go get -u github.com/swaggo/files
+go get -u github.com/tinyauthapp/gin-scalar
 ```
 
-Import following in your code:
+Import the middleware:
 
 ```go
-import "github.com/swaggo/gin-swagger" // gin-swagger middleware
-import "github.com/swaggo/files" // swagger embed files
-
+import "github.com/tinyauthapp/gin-scalar"
 ```
 
-### Canonical example:
+### Canonical example
 
-Now assume you have implemented a simple api as following:
+Now assume you have implemented a simple API as follows:
 
 ```go
-// A get function which returns a hello world string by json
-func Helloworld(g *gin.Context)  {
-	g.JSON(http.StatusOK,"helloworld")
+// A get function that returns a hello world string by JSON
+type HelloWorldResponse struct {
+    Message string `json:"message"`
 }
 
+func HelloWorld(ctx *gin.Context)  {
+   ctx.JSON(http.StatusOK, HelloWorldResponse{
+   Message: "Hello, World!",
+   })
+}
 ```
 
-So how to use gin-swagger on api above? Just follow the following guide.
+Now, add the scalar middleware to your gin router:
 
-1. Add Comments for apis and main function with gin-swagger rules like following:
+1. Add comments in the API and in the main function:
 
 ```go
+type HelloWorldResponse struct {
+	Message string `json:"message"`
+}
 // @BasePath /api/v1
 
-// PingExample godoc
-// @Summary ping example
-// @Schemes
-// @Description do ping
+// HelloWorldExample godoc
+// @Summary Hello World Example
+// @Description Just return a hello world string
 // @Tags example
-// @Accept json
 // @Produce json
-// @Success 200 {string} Helloworld
+// @Success 200 {object} HelloWordResponse
 // @Router /example/helloworld [get]
-func Helloworld(g *gin.Context)  {
-	g.JSON(http.StatusOK,"helloworld")
+func HelloWorld(ctx *gin.Context)  {
+    ctx.JSON(http.StatusOK, HelloWorldResponse{
+		Message: "Hello, World!",
+    })
 }
 ```
 
-2. Use `swag init` command to generate a docs, docs generated will be stored at `docs/`.
-3. import the docs like this:
-   I assume your project named `github.com/go-project-name/docs`.
+2. Use the `swag init` command to generate the docs, the generated docs will be stored at `docs/`.
 
-```go
-import (
-   docs "github.com/go-project-name/docs"
-)
-```
-
-4. build your application and after that, go to http://localhost:8080/swagger/index.html ,you to see your Swagger UI.
-
-5. The full code and folder relatives here:
+3. Add the scalar middleware to your gin router:
 
 ```go
 package main
@@ -101,23 +85,25 @@ package main
 import (
    "github.com/gin-gonic/gin"
    docs "github.com/go-project-name/docs"
-   swaggerfiles "github.com/swaggo/files"
-   ginSwagger "github.com/swaggo/gin-swagger"
+   ginScalar "github.com/tinyauthapp/gin-scalar"
    "net/http"
 )
+type HelloWorldResponse struct {
+   Message string `json:"message"`
+}
 // @BasePath /api/v1
 
-// PingExample godoc
-// @Summary ping example
-// @Schemes
-// @Description do ping
+// HelloWorldExample godoc
+// @Summary Hello World Example
+// @Description Just return a hello world string
 // @Tags example
-// @Accept json
 // @Produce json
-// @Success 200 {string} Helloworld
+// @Success 200 {object} HelloWorldResponse
 // @Router /example/helloworld [get]
-func Helloworld(g *gin.Context)  {
-   g.JSON(http.StatusOK,"helloworld")
+func HelloWorld(ctx *gin.Context)  {
+   ctx.JSON(http.StatusOK, HelloWorldResponse{
+      Message: "Hello, World!",
+   })
 }
 
 func main()  {
@@ -127,83 +113,42 @@ func main()  {
    {
       eg := v1.Group("/example")
       {
-         eg.GET("/helloworld",Helloworld)
+         eg.GET("/helloworld", HelloWorld)
       }
    }
-   r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+   r.GET("/scalar/*any", ginScalar.WrapHandler(nil))
    r.Run(":8080")
-
 }
 ```
 
-Demo project tree, `swag init` is run at relative `.`
+Demo project tree, `swag init` is run at the root path of the project.
 
 ```
 .
 ├── docs
-│   ├── docs.go
-│   ├── swagger.json
-│   └── swagger.yaml
+│   ├── docs.go
+│   ├── swagger.json
+│   └── swagger.yaml
 ├── go.mod
 ├── go.sum
 └── main.go
 ```
-## Project with Nested Directory
-```
-.
-├── cmd
-│   └── ginsimple
-│       └── main.go
-├── docs
-│   ├── docs.go
-│   ├── swagger.json
-│   └── swagger.yaml
-├── go.mod
-├── go.sum
-└── internal
-    ├── handlers
-    │   ├── helloWorld.go
-    │   └── userHandler.go
-    └── models
-        ├── profile.go
-        └── user.go
-```
-Inorder generate swagger docs for projects with nested directories run the following command
-```bash
-swag init -g ./cmd/ginsimple/main.go -o cmd/docs
-```
-`-o` will set the auto generated file to the specified path
-
-
-## Multiple APIs
-
-This feature was introduced in swag v1.7.9
 
 ## Configuration
 
-You can configure Swagger using different configuration options
+You can configure Scalar using different configuration options. For example:
 
 ```go
-func main() {
-	r := gin.New()
-
-	ginSwagger.WrapHandler(swaggerfiles.Handler,
-		ginSwagger.URL("http://localhost:8080/swagger/doc.json"),
-		ginSwagger.DefaultModelsExpandDepth(-1))
-
-	r.Run()
-}
+ginScalar.WrapHandler(nil, ginScalar.URL("http://localhost:8080/swagger/doc.json"))
 ```
 
-| Option                   | Type   | Default    | Description                                                                                                                                                                                                                                               |
-| ------------------------ | ------ | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| URL                      | string | "doc.json" | URL pointing to API definition                                                                                                                                                                                                                            |
-| DocExpansion             | string | "list"     | Controls the default expansion setting for the operations and tags. It can be 'list' (expands only the tags), 'full' (expands the tags and operations) or 'none' (expands nothing).                                                                       |
-| DeepLinking              | bool   | true       | If set to true, enables deep linking for tags and operations. See the Deep Linking documentation for more information.                                                                                                                                    |
-| DefaultModelsExpandDepth | int    | 1          | Default expansion depth for models (set to -1 completely hide the models).                                                                                                                                                                                |
-| DefaultModelExpandDepth  | int    | 1          | Default expansion depth for the model on the model-example section.                                                                                                                                                                                       |
-| DefaultModelRendering    | string | "example"  | Controls how the model is shown when the API is first rendered. "example" or "model". (The user can always switch the rendering for a given model by clicking the 'Model' and 'Example Value' links.)                                                     |
-| InstanceName             | string | "swagger"  | The instance name of the swagger document. If multiple different swagger instances should be deployed on one gin router, ensure that each instance has a unique name (use the _--instanceName_ parameter to generate swagger documents with _swag init_). |
-| PersistAuthorization     | bool   | false      | If set to true, it persists authorization data and it would not be lost on browser close/refresh.                                                                                                                                                         |
-| Oauth2DefaultClientID    | string | ""         | If set, it's used to prepopulate the _client_id_ field of the OAuth2 Authorization dialog.                                                                                                                                                                |
-| Oauth2UsePkce            | bool   | false      | If set to true, it enables Proof Key for Code Exchange to enhance security for OAuth public clients.                                                                                                                                                      |
+| Option       | Type   | Default    | Description                                                                                                                                                                                                                                                |
+| ------------ | ------ | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| URL          | string | "doc.json" | URL pointing to API definition (normally swagger.json or swagger.yaml)                                                                                                                                                                                     |
+| InstanceName | string | "swagger"  | The instance name of the swagger document. If multiple different swagger instances should be deployed on one gin router, ensure that each instance has a unique name (use the _--instanceName_ parameter to generate swagger documents with _swag init_).  |
+| BasePath     | string | "/scalar"  | The base path in which the Scalar UI will be served                                                                                                                                                                                                        |
+| ProjectName  | string | "Scalar"   | Project name displayed as the page title of the Scalar UI                                                                                                                                                                                                  |
+
+## License
+
+Licensed under [MIT](./LICENSE).
