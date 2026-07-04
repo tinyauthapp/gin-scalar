@@ -93,6 +93,7 @@ func CustomWrapHandler(config *Config) gin.HandlerFunc {
 	scalarCfg := scalarConfig{
 		ScalarScript: config.BasePath + "/standalone.js",
 		DocPath:      config.URL,
+		ProjectName:  config.ProjectName,
 	}
 
 	// create the scalar template
