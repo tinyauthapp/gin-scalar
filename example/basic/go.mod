@@ -2,13 +2,13 @@ module basic
 
 go 1.26.1
 
-replace github.com/tinyauthapp/gin-swagger-scalar => ../../
+replace github.com/tinyauthapp/gin-scalar => ../../
 
 require (
 	github.com/gin-gonic/gin v1.12.0
 	github.com/swaggo/gin-swagger v1.6.1
 	github.com/swaggo/swag v1.16.6
-	github.com/tinyauthapp/gin-swagger-scalar v0.0.0-20260115081047-45b6a78e0f9e
+	github.com/tinyauthapp/gin-scalar v0.0.0-00010101000000-000000000000
 )
 
 require (

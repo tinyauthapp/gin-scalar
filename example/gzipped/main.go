@@ -4,7 +4,7 @@ import (
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	_ "github.com/swaggo/gin-swagger/example/basic/docs"
-	ginScalar "github.com/tinyauthapp/gin-swagger-scalar"
+	ginScalar "github.com/tinyauthapp/gin-scalar"
 )
 
 // @title Swagger Example API

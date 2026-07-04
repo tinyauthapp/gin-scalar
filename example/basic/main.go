@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/swaggo/gin-swagger/example/basic/api"
-	ginScalar "github.com/tinyauthapp/gin-swagger-scalar"
+	ginScalar "github.com/tinyauthapp/gin-scalar"
 
 	_ "github.com/swaggo/gin-swagger/example/basic/docs"
 )
